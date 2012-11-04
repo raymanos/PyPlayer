@@ -129,7 +129,11 @@ class CreateDatabase:
 
             for path, files, dirs in os.walk(PathCollection):
                 for name in dirs:
-                    fullpath = path + '\\' + name
+                    #Windows way
+                    #fullpath = path + '\\' + name
+                    fullpath = path + '/' + name
+                    if not os.path.exists(fullpath):
+                        debug('NOT EXISTS')
                     if name[-3:] == 'mp3':
                         try:
                             if getsize(fullpath) > 0:

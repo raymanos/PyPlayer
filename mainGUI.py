@@ -56,6 +56,7 @@ class TWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.prevButton.clicked.connect(self.playPrevTrack)
         self.newPlsButton.clicked.connect(self.generateM3U)
         self.clearPlsButton.clicked.connect(self.clearPlaylist)
+        self.actionScan.triggered.connect(self.Coll.ScanFolders(''))
 
         #показываем фс
         model = QFileSystemModel()
@@ -65,6 +66,8 @@ class TWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         self.writeSettings()
+    def test(self):
+        print 'Test clcik'
     def keyPressEvent(self, e):
         #----CTRL+1,2,3,4,5-------------
         if e.key() == QtCore.Qt.Key_1:
