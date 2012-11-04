@@ -44,14 +44,17 @@ class CreateDatabase:
         track varchar(10),path varchar(50), cover_path varchar(50),play_time varchar(10),\
         file_size varchar(10), stars varchar(3), plays varchar(10))')
 
-
     def CoverFind(self, directory):
-        if os.path.exists(directory+'\\'+'cover.jpg'):
+        if os.path.exists(directory + '\\' + 'cover.jpg'):
             return directory + '\\' + 'cover.jpg'
 
         items = os.listdir(directory)
-        cover = fnmatch.filter(items,'*.jpg')
-        return directory + '\\' + cover[0]  #возвращаем первый найденный jpeg
+        covers = fnmatch.filter(items,'*.jpg')
+        #for cover in covers:
+        if covers.__len__() != 0:
+            return directory + '\\' + covers[0]  #возвращаем первый найденный jpeg
+        else:
+            return 'default.jpg'
 
     def getTags(self, fullpath, path):
         tag_list=[]
@@ -66,62 +69,67 @@ class CreateDatabase:
         try:
             art = audio['artist'][0]
             tag_list.append(art)
-            debug(art)
+            #debug(art)
         except:
             tag_list.append('No_Artist')
-            debug('No_Artist')
+            #debug('No_Artist')
         #------ALBUM-------
         try:
             alb = audio['album'][0]
             tag_list.append(alb)
-            debug(alb)
+            #debug(alb)
         except:
             tag_list.append('No_Album')
-            debug('No_Album')
+            #debug('No_Album')
         #-----TITLE-------
         try:
             tit = audio['title'][0]
             tag_list.append(tit)
-            debug(tit)
+            #debug(tit)
         except:
             tag_list.append(basename(fullpath))
-            debug(basename(fullpath))
+            #debug(basename(fullpath))
         #Genre
         try:
             gen = audio['genre'][0]
             tag_list.append(gen)
-            debug(gen)
+            #debug(gen)
         except:
-            tag_list.append(basename(fullpath))
-            debug(basename(fullpath))
+            tag_list.append('No_Genre')
+            #debug(basename(fullpath))
 
         try:
             dat = audio['date'][0]
             tag_list.append(dat)
-            debug(dat)
+            #debug(dat)
         except:
             tag_list.append('')
-            debug('')
+            #debug('')
 
         try:
             tra = audio['tracknumber'][0]
             tag_list.append(tra)
-            debug(tra)
+            #debug(tra)
         except:
             tag_list.append('')
-            debug('')
+            #debug('')
 
         tag_list.append( fullpath.decode('cp1251') )
         tag_list.append( self.CoverFind(path.decode('cp1251')) )
         tag_list.append( self.S2HMS(info_track.info.length))
         tag_list.append( getsize(fullpath) )
+        debug(fullpath.decode('cp1251'))
         tag_list.append( '0' )#оценка(по умолчанию 0)
         tag_list.append( '0' )#колчиество проигрываний
         return tag_list
 
+
     def ScanFolders(self, PathCollection):
         fullpath = ''
         cover_path = ''
+        countAddedFiles = 0
+        countIgnoredFiles = 0
+        ignoredFiles=[]
 
         if os.path.exists(PathCollection):
             self.dirCount = QDir(PathCollection).count()
@@ -130,17 +138,22 @@ class CreateDatabase:
             for path, files, dirs in os.walk(PathCollection):
                 for name in dirs:
                     #Windows way
-                    #fullpath = path + '\\' + name
-                    fullpath = path + '/' + name
+                    fullpath = path + '\\' + name
+                    #Linux way
+                    #fullpath = path + '/' + name
                     if not os.path.exists(fullpath):
-                        debug('NOT EXISTS')
+                        debug('NOT EXISTS-'+fullpath)
                     if name[-3:] == 'mp3':
                         try:
                             if getsize(fullpath) > 0:
                                 tag_list = self.getTags(fullpath,path)
-                                self.AddToCollection(tag_list)
+                                #self.AddToCollection(tag_list)
+                                countAddedFiles += 1
+
                         except:
-                            debug('!!!Error: Incorrect filename. '+fullpath)
+                            ignoredFiles.append(fullpath)
+                            countIgnoredFiles += 1
+                            debug('Error[getsize]: Incorrect filename. '+fullpath)
 
 
                 if(self.progress < self.dirCount):
@@ -148,6 +161,9 @@ class CreateDatabase:
                 else:
                     self.progress = self.dirCount
                 print(str(self.progress)+'/'+str(self.dirCount))
+        debug('Files added: '+str(countAddedFiles))
+        debug('Ignored files('+str(countIgnoredFiles)+')')
+        debug('\n'.join(ignoredFiles))
 
 
     def AddToCollection(self,tag_list):
@@ -182,7 +198,6 @@ class CreateDatabase:
             artistList.append(artist[0])
             debug(artist)
         return artistList
-
 		
     def S2HMS(self,t):
     #Converts seconds to a string formatted H:mm:ss
