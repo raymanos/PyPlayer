@@ -1,0 +1,1 @@
+C:\Python27\Lib\site-packages\PyQt4\pyrcc4.exe f:\pyplayer\icons\icons.qrc -o f:\pyplayer\icons\icons_rc.py

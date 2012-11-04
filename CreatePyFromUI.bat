@@ -1,0 +1,2 @@
+C:\Python27\Lib\site-packages\PyQt4\pyuic4.bat h:\pyplayer\ui\mainwindow.ui -o h:\pyplayer\ui\ui_mainwindow.py
+C:\Python27\Lib\site-packages\PyQt4\pyuic4.bat h:\pyplayer\ui\settingswindow.ui -o h:\pyplayer\ui\ui_settingswindow.py
