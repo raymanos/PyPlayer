@@ -1,0 +1,23 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>del_pls.png</file>
+    <file>add_pls.png</file>
+    <file>inet.png</file>
+    <file>no_inet.png</file>
+    <file>file_size.png</file>
+    <file>num.png</file>
+    <file>length.png</file>
+    <file>settings.png</file>
+    <file>genre.png</file>
+    <file>title.png</file>
+    <file>date.png</file>
+    <file>control_end_blue.png</file>
+    <file>control_pause_blue.png</file>
+    <file>control_play_blue.png</file>
+    <file>control_start_blue.png</file>
+    <file>control_stop_blue.png</file>
+    <file>cd.png</file>
+    <file>cd_case.png</file>
+    <file>artist.png</file>
+  </qresource>
+</RCC>
