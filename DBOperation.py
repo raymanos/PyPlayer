@@ -7,7 +7,6 @@ import os
 import fnmatch
 from os.path import getsize
 from PyQt4.QtCore import QDir
-from PyQt4.QtSql import *
 from os.path import basename
 
 """AddToCollection(all tags)"""
