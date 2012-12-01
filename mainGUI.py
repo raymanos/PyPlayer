@@ -41,7 +41,7 @@ class TWindow(QtGui.QMainWindow, Ui_MainWindow):
 ##        self.getAlbum()
         self.delayedInit()
         #Загружаем настройки
-        self.readSettings()
+        #self.readSettings()
 ##        self.m_media.pause()
 
         #Подключаем обработчики
@@ -56,18 +56,19 @@ class TWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.prevButton.clicked.connect(self.playPrevTrack)
         self.newPlsButton.clicked.connect(self.generateM3U)
         self.clearPlsButton.clicked.connect(self.clearPlaylist)
-        self.actionScan.triggered.connect(self.Coll.ScanFolders(''))
+        #self.actionScan.triggered.connect(self.test)
 
         #показываем фс
-        model = QFileSystemModel()
-        model.setRootPath('C:\\')
-        self.treeView.setModel(model)
-        self.loadM3U()
+        #model = QFileSystemModel()
+        #model.setRootPath('C:\\')
+        #self.treeView.setModel(model)
+        #self.loadM3U()
 
     def closeEvent(self, event):
         self.writeSettings()
     def test(self):
-        print 'Test clcik'
+        pass
+        #self.Coll.ScanFolders()
     def keyPressEvent(self, e):
         #----CTRL+1,2,3,4,5-------------
         if e.key() == QtCore.Qt.Key_1:
@@ -110,6 +111,10 @@ class TWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.seekSlider.setMediaObject(self.m_media)
             self.volumeSlider.setAudioOutput(self.audioOutput)
             self.m_media.aboutToFinish.connect(self.playNextTrack)
+            self.m_media.stateChanged.connect(self.test2)
+
+    def test2(self):
+        print 'State:'+unicode(self.m_media.errorString())
 
     def PlayPausePlayer(self):
         if (self.m_media.state() == 2):
@@ -130,8 +135,11 @@ class TWindow(QtGui.QMainWindow, Ui_MainWindow):
         else:
             print 'Path NOT exists!'
         print path
-        self.m_media.setCurrentSource(Phonon.MediaSource(path))
+        path_ = QString(path)
+        self.m_media.setCurrentSource(Phonon.MediaSource(path_))
         self.m_media.play()
+        print 'State: '+str(self.m_media.state())
+        print self.m_media.errorString()
 
         #ставим обложку трека
         self.album = unicode(self.tableWidget.item(self.oldRow,3).text())
@@ -256,24 +264,24 @@ class TWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def getArtist(self):
         self.artistList.clear()
-        aList = self.Coll.QueryToCollection('select distinct artist from music')
+        aList = self.Coll.getArtists()
         for item in aList:
-            self.artistList.addItem(item)
+            self.artistList.addItem(item.decode('utf-8'))
 
     def getAlbum(self):
         self.artist = self.artistList.currentItem().text()
         self.albumList.clear()
-        aList = self.Coll.QueryToCollection('select distinct album from music where artist="'+unicode(self.artist)+'"')
+        aList = self.Coll.getAlbums(self.artist)
         for item in aList:
-            self.albumList.addItem(item)
+            self.albumList.addItem(item.decode('utf-8'))
 
     def getTracks(self):
         self.album = self.albumList.currentItem().text()
         self.titleList.clear()
-        aList = self.Coll.QueryToCollection('select title from music where album="'\
-            +str(self.album)+'" and artist="'+self.artist.decode('cp1251')+'"')
+        aList = self.Coll.getTracks(self.artist, self.album)
         for item in aList:
-            self.titleList.addItem(item)
+            self.titleList.addItem(item.decode('utf-8'))
+
     def getTracksToView(self):
         curRow = self.tableWidget.rowCount()
         print 'curRow = ',curRow

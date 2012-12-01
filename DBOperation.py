@@ -18,6 +18,7 @@ def debug(text):
 		print(text)
 
 class CreateDatabase:
+    kilo = 0
     def __init__(self,drop):
         #ProgramTable: DateStart,MusicSearchStart
         self.connection = sqlite.Connection('music.db')
@@ -147,8 +148,9 @@ class CreateDatabase:
                         try:
                             if getsize(fullpath) > 0:
                                 tag_list = self.getTags(fullpath,path)
-                                #self.AddToCollection(tag_list)
+                                self.AddToCollection(tag_list)
                                 countAddedFiles += 1
+                                CreateDatabase.kilo += 1
 
                         except:
                             ignoredFiles.append(fullpath)
@@ -195,9 +197,26 @@ class CreateDatabase:
         self.cursor.execute('select distinct artist from music')
         artists = self.cursor.fetchall()
         for artist in artists:
-            artistList.append(artist[0])
+            artistList.append(artist[0].encode('utf-8'))
             debug(artist)
         return artistList
+
+    def getAlbums(self, artist):
+        albumList=[]
+        self.cursor.execute('select distinct album from music where artist="'+unicode(artist)+'"')
+        albums = self.cursor.fetchall()
+        for album in albums:
+            albumList.append(album[0].encode('utf-8'))
+        return albumList
+
+    def getTracks(self, artist, album):
+        trackList = []
+        self.cursor.execute('select title from music where album="'+unicode(album)+'" and artist="'+unicode(artist)+'"')
+        tracks = self.cursor.fetchall()
+        for track in tracks:
+            trackList.append(track[0].encode('utf-8'))
+        return trackList
+
 		
     def S2HMS(self,t):
     #Converts seconds to a string formatted H:mm:ss
